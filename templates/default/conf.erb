@@ -1,0 +1,6 @@
+[global]
+<% node['php']['fpm']['global_setting_names'].select { |k| node['php']['fpm'].attribute?(k) }.each do |name| %>
+<%=name%> = <%=String(node['php']['fpm'][name])%>
+<% end %>
+
+include=<%=node['php']['fpm']['pool_dir'] %>/*.conf
