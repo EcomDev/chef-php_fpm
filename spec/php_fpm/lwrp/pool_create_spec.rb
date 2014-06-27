@@ -1,3 +1,23 @@
+#
+# PHP-FPM Cookbook - PHP-FPM Chef Cookbook to allow building easily vagrant
+# environment
+# Copyright (C) 2014 Ivan Chepurnyi <ivan.chepurnyi@ecomdev.org>, EcomDev B.V.
+#
+# This file is part of PHP-FPM Cookbook.
+#
+# PHP-FPM Cookbook is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PHP-FPM Cookbook is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PHP-FPM Cookbook.  If not, see <http://www.gnu.org/licenses/>.
+#
 require 'spec_helper'
 
 describe 'php_fpm::_test_pool_create' do
@@ -47,7 +67,7 @@ describe 'php_fpm::_test_pool_create' do
                                .and line_matches('user = ' + node['php']['fpm']['default']['user'])
                                .and line_matches('group = ' + node['php']['fpm']['default']['group'])
                                .and line_matches('listen = ' + node['php']['fpm']['run_dir'] + '/test.php-fpm-sock')
-                               .and line_matches('listen.user = ' + node['php']['fpm']['default']['socket_user'])
+                               .and line_matches('listen.owner = ' + node['php']['fpm']['default']['socket_user'])
                                .and line_matches('listen.group = ' + node['php']['fpm']['default']['socket_group'])
                                .and line_matches('listen.mode = ' + node['php']['fpm']['default']['socket_mode'])
                                .and line_matches('pm = ' + node['php']['fpm']['default']['pm'])
@@ -132,17 +152,15 @@ describe 'php_fpm::_test_pool_create' do
         stub_dir_glob(File.join(node['php']['fpm']['pool_dir'], '*.conf'), [])
       end
       template = chef_run.template(File.join(node['php']['fpm']['conf_dir'], 'php-fpm.conf'))
-      expect(template).not_to notify('service[' + node['php']['fpm']['service'] + ']').to(:restart).delayed
-      expect(template.updated_by_last_action?).to eq(true)
+      expect(template).not_to notify('service[' + node['php']['fpm']['service'] + ']').to(:restart).immediately
     end
 
     it 'restarts fpm service if pools have been added before' do
       converged do
-        stub_dir_glob(File.join(node['php']['fpm']['pool_dir'], '*.conf'), ['test.conf'])
+        stub_dir_glob(File.join(node['php']['fpm']['pool_dir'], '*.conf'), [File.join(node['php']['fpm']['pool_dir'], 'other.conf')])
       end
       template = chef_run.template(File.join(node['php']['fpm']['conf_dir'], 'php-fpm.conf'))
       expect(template).to notify('service[' + node['php']['fpm']['service'] + ']').to(:restart).immediately
-      expect(template.updated_by_last_action?).to eq(true)
     end
 
     it 'starts fpm service if pool config was updated and no pools have been started' do
@@ -152,16 +170,14 @@ describe 'php_fpm::_test_pool_create' do
 
       template = chef_run.template(File.join(node['php']['fpm']['pool_dir'], 'test.conf'))
       expect(template).to notify('service[' + node['php']['fpm']['service'] + ']').to(:start).immediately
-      expect(template.updated_by_last_action?).to eq(true)
     end
 
     it 'reloads fpm service if pool config was updated' do
       converged do
-        stub_dir_glob(File.join(node['php']['fpm']['pool_dir'], '*.conf'), ['test.conf'])
+        stub_dir_glob(File.join(node['php']['fpm']['pool_dir'], '*.conf'), [File.join(node['php']['fpm']['pool_dir'], 'other.conf')])
       end
       template = chef_run.template(File.join(node['php']['fpm']['pool_dir'], 'test.conf'))
       expect(template).to notify('service[' + node['php']['fpm']['service'] + ']').to(:reload).immediately
-      expect(template.updated_by_last_action?).to eq(true)
     end
   end
 end

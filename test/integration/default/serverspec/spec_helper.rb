@@ -18,13 +18,16 @@
 # You should have received a copy of the GNU General Public License
 # along with PHP-FPM Cookbook.  If not, see <http://www.gnu.org/licenses/>.
 #
+require 'serverspec'
 
-if node.attribute?('_php_fpm_test')
-  php_fpm_pool node['_php_fpm_test']['pool'] do
-    node['_php_fpm_test'].each_pair do |key, value|
-      if key != 'pool'
-        send(key.to_sym, value)
-      end
-    end
+include SpecInfra::Helper::Exec
+include SpecInfra::Helper::DetectOS
+
+RSpec.configure do |c|
+  if ENV['ASK_SUDO_PASSWORD']
+    require 'highline/import'
+    c.sudo_password = ask("Enter sudo password: ") { |q| q.echo = false }
+  else
+    c.sudo_password = ENV['SUDO_PASSWORD']
   end
 end

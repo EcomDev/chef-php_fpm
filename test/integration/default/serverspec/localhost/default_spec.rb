@@ -18,13 +18,21 @@
 # You should have received a copy of the GNU General Public License
 # along with PHP-FPM Cookbook.  If not, see <http://www.gnu.org/licenses/>.
 #
+require 'spec_helper'
 
-if node.attribute?('_php_fpm_test')
-  php_fpm_pool node['_php_fpm_test']['pool'] do
-    node['_php_fpm_test'].each_pair do |key, value|
-      if key != 'pool'
-        send(key.to_sym, value)
-      end
-    end
-  end
+expected_php_version = '5.5.13'
+service_name = 'php5-fpm'
+service_name = 'php-fpm' if os[:family] == 'RedHat'
+
+describe service(service_name) do
+   it { should be_enabled }
+   it { should be_running }
+end
+
+describe process('php-fpm') do
+  it { should be_running }
+end
+
+describe command('php -v') do
+  it { should return_stdout /PHP\s#{Regexp.escape(expected_php_version)}\s/ }
 end

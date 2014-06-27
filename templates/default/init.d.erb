@@ -95,14 +95,16 @@ case "$1" in
 	status)
 		if [ ! -r $php_fpm_PID ] ; then
 			echo "php-fpm is stopped"
-			exit 0
+			exit 1
 		fi
 
 		PID=`cat $php_fpm_PID`
 		if ps -p $PID | grep -q $PID; then
 			echo "php-fpm (pid $PID) is running..."
+            exit 0
 		else
 			echo "php-fpm dead but pid file exists"
+            exit 1
 		fi
 	;;
 

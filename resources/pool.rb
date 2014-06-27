@@ -1,3 +1,23 @@
+#
+# PHP-FPM Cookbook - PHP-FPM Chef Cookbook to allow building easily vagrant
+# environment
+# Copyright (C) 2014 Ivan Chepurnyi <ivan.chepurnyi@ecomdev.org>, EcomDev B.V.
+#
+# This file is part of PHP-FPM Cookbook.
+#
+# PHP-FPM Cookbook is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PHP-FPM Cookbook is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PHP-FPM Cookbook.  If not, see <http://www.gnu.org/licenses/>.
+#
 actions :create, :delete
 
 attribute :name, :kind_of => [String, Symbol], :name_attribute => true # Name of the fpm app
@@ -54,43 +74,6 @@ attribute :php_flag, :kind_of => [Hash, Symbol], default: :fpm_default
 attribute :php_admin_value, :kind_of => [Hash, Symbol], default: :fpm_default
 attribute :php_admin_flag, :kind_of => [Hash, Symbol], default: :fpm_default
 
-
-state_attrs :name,
-            :user,
-            :group,
-            :socket,
-            :socket_user,
-            :socket_group,
-            :socket_mode,
-            :ip,
-            :port,
-            :prefix,
-            :pm,
-            :max_children,
-            :start_servers,
-            :min_spare_servers,
-            :max_spare_servers,
-            :max_requests,
-            :queue_size,
-            :status_path,
-            :ping_path,
-            :ping_response,
-            :request_slowlog_timeout,
-            :request_terminate_timeout,
-            :slowlog,
-            :rlimit_core,
-            :rlimit_files,
-            :chroot,
-            :chdir,
-            :catch_workers_output,
-            :limit_extensions,
-            :allowed_ip,
-            :env,
-            :php_flag,
-            :php_value,
-            :php_admin_flag,
-            :php_admin_value
-
 def initialize(*args)
   super
   @action = :create
@@ -109,4 +92,3 @@ end
 def only_this_pool?
   pools == [::File.join(node['php']['fpm']['pool_dir'], name + '.conf')]
 end
-

@@ -1,3 +1,23 @@
+#
+# PHP-FPM Cookbook - PHP-FPM Chef Cookbook to allow building easily vagrant
+# environment
+# Copyright (C) 2014 Ivan Chepurnyi <ivan.chepurnyi@ecomdev.org>, EcomDev B.V.
+#
+# This file is part of PHP-FPM Cookbook.
+#
+# PHP-FPM Cookbook is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PHP-FPM Cookbook is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PHP-FPM Cookbook.  If not, see <http://www.gnu.org/licenses/>.
+#
 require 'spec_helper'
 
 describe 'php_fpm::_test_pool_delete' do
@@ -5,7 +25,7 @@ describe 'php_fpm::_test_pool_delete' do
 
   let(:chef_run) do
     ChefSpec::Runner.new(step_into: 'php_fpm_pool') do |node|
-      stub_include
+      stub_include(['php_fpm::fpm'])
       node.set[:_php_fpm_test][:pool] = pool_name
     end
   end
@@ -28,6 +48,23 @@ describe 'php_fpm::_test_pool_delete' do
 
     it 'it deletes php fpm pool config file' do
       expect(converged).to delete_file(File.join(node['php']['fpm']['pool_dir'], 'test.conf'))
+    end
+
+    it 'reloads fpm service if pools have been added before' do
+      converged do
+        stub_dir_glob(File.join(node['php']['fpm']['pool_dir'], '*.conf'), [File.join(node['php']['fpm']['pool_dir'], 'other.conf')])
+      end
+      file = chef_run.file(File.join(node['php']['fpm']['pool_dir'], 'test.conf'))
+      expect(file).to notify('service[' + node['php']['fpm']['service'] + ']').to(:reload).immediately
+    end
+
+    it 'stop fpm service if pool config was updated and no pools have been started' do
+      converged do
+        stub_dir_glob(File.join(node['php']['fpm']['pool_dir'], '*.conf'), [File.join(node['php']['fpm']['pool_dir'], 'test.conf')])
+      end
+
+      file = chef_run.file(File.join(node['php']['fpm']['pool_dir'], 'test.conf'))
+      expect(file).to notify('service[' + node['php']['fpm']['service'] + ']').to(:stop).immediately
     end
   end
 end

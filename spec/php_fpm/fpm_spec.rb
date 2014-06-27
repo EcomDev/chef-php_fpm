@@ -1,3 +1,23 @@
+#
+# PHP-FPM Cookbook - PHP-FPM Chef Cookbook to allow building easily vagrant
+# environment
+# Copyright (C) 2014 Ivan Chepurnyi <ivan.chepurnyi@ecomdev.org>, EcomDev B.V.
+#
+# This file is part of PHP-FPM Cookbook.
+#
+# PHP-FPM Cookbook is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PHP-FPM Cookbook is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PHP-FPM Cookbook.  If not, see <http://www.gnu.org/licenses/>.
+#
 require 'spec_helper'
 
 describe 'php_fpm::fpm' do
@@ -124,15 +144,6 @@ describe 'php_fpm::fpm' do
         chef_run.node.set['php']['fpm']['disable_default_pool'] = false
         expect(converged).not_to delete_file(chef_run.node['php']['fpm']['pool_dir'] + '/www.conf')
       end
-
-  #    it 'creates a configuration file fo php-fpm service' do
-  #      expect(converged).to render_file(chef_run.node['php']['fpm']['conf_dir'] + '/php-fpm.conf')
-  #    end
-
-      #it 'notifies php-fpm service if fpm config is changed' do
-      #  template = converged.template(chef_run.node['php']['fpm']['conf_dir'] + '/php-fpm.conf')
-      #  expect(template).to notify('service[' + chef_run.node['php']['fpm']['service'] + ']').delayed
-      #end
 
       it 'removes default fpm-code pool' do
         expect(converged).to delete_file(chef_run.node['php']['fpm']['pool_dir'] + '/www.conf')
