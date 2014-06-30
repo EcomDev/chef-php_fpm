@@ -22,19 +22,27 @@ class Chef
   class Resource
     class LWRPBase
 
-      def hash_fill_default_options(variables, attribute, expected_symbol)
-        attribute.each_pair do |key, value|
-          if variables.key?(key.to_sym) && variables[key.to_sym] == expected_symbol
-            variables[key.to_sym] = value
+      def init_default_attribute_value(variable, default_data, default_symbol)
+        value = send(variable.to_sym)
+        if value == default_symbol && default_data.key?(variable)
+          default_value = default_data[variable]
+          if default_value.is_a?(Array)
+            value = default_value.to_a
+          elsif default_value.is_a?(Hash)
+            value = default_value.to_hash
+          else
+            value = default_value
           end
+          send(variable.to_sym, value)
         end
-
-        variables
       end
 
-      def dump_attribute_values
+      def dump_attribute_values(default_data, default_symbol)
         values = Hash.new
-        self.attribute_names.each { |key| values[key] = send(key.to_sym) }
+        self.attribute_names.each do |key|
+          init_default_attribute_value(key, default_data, default_symbol)
+          values[key] = send(key.to_sym)
+        end
         values
       end
 

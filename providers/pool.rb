@@ -26,8 +26,7 @@ end
 action :create do
   run_context.include_recipe 'php_fpm::fpm'
   resource = Array.new
-  variables = new_resource.hash_fill_default_options(
-      new_resource.dump_attribute_values,
+  variables = new_resource.dump_attribute_values(
       node['php']['fpm']['default'],
       :fpm_default
   )
