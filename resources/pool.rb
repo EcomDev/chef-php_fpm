@@ -35,12 +35,12 @@ attribute :prefix, :kind_of => [String, NilClass, Symbol], :default => nil # Pre
 
 # Process manager options
 attribute :pm, :kind_of => [String, Symbol], :equal_to => %w(dynamic static), :default => :fpm_default # Type of process manager
-attribute :max_children, :kind_of => [Fixnum, Symbol], default: :fpm_default
-attribute :start_servers, :kind_of => [Fixnum, Symbol], default: :fpm_default
-attribute :min_spare_servers, :kind_of => [Fixnum, Symbol], default: :fpm_default
-attribute :max_spare_servers, :kind_of => [Fixnum, Symbol], default: :fpm_default
-attribute :max_requests, :kind_of => [Fixnum, Symbol], default: :fpm_default
-attribute :queue_size, :kind_of => [Fixnum, Symbol], default: :fpm_default
+attribute :max_children, :kind_of => [Fixnum, String, Symbol], default: :fpm_default
+attribute :start_servers, :kind_of => [Fixnum, String, Symbol], default: :fpm_default
+attribute :min_spare_servers, :kind_of => [Fixnum, String, Symbol], default: :fpm_default
+attribute :max_spare_servers, :kind_of => [Fixnum, String, Symbol], default: :fpm_default
+attribute :max_requests, :kind_of => [Fixnum, String, Symbol], default: :fpm_default
+attribute :queue_size, :kind_of => [Fixnum, String, Symbol], default: :fpm_default
 
 # Status hook options
 attribute :status_path, :kind_of => [String, NilClass, Symbol], default: :fpm_default
@@ -53,7 +53,7 @@ attribute :request_slowlog_timeout, :kind_of => [String, NilClass, Symbol], defa
 attribute :slowlog, :kind_of => [String, NilClass, Symbol], default: :fpm_default
 
 # Tune options for process count
-attribute :rlimit_files, :kind_of => [Fixnum, NilClass, Symbol], default: :fpm_default
+attribute :rlimit_files, :kind_of => [Fixnum, String, NilClass, Symbol], default: :fpm_default
 attribute :rlimit_core, :kind_of => [Fixnum, String, NilClass, Symbol], default: :fpm_default
 
 # Security options

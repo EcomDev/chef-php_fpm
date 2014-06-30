@@ -21,7 +21,6 @@
 module EcomDev
   module PhpFpm
     module Helpers
-      include Chef::Mixin::DeepMerge
       # @return Mash
       def php_fpm_pool_options(pool_name, options=nil)
         if options.nil?
@@ -34,7 +33,7 @@ module EcomDev
       end
 
       # returns a string formatted for fastcgi listen
-      def php_fpm_listen_for_fastcgi(pool_name)
+      def fpm_fastcgi_listen(pool_name)
         options = php_fpm_pool_options(pool_name)
         listen = generate_php_fpm_listen(pool_name)
 
