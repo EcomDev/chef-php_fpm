@@ -70,8 +70,8 @@ module EcomDev
           params[:allowed_clients] = Array(options[:allowed_ip]).join(',')
         end
 
-        if options.queue_size
-          params[:backlog] = options.queue_size
+        if options[:queue_size]
+          params[:backlog] = options[:queue_size]
         end
 
         params
