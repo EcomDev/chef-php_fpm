@@ -33,7 +33,7 @@ class Chef
           else
             value = default_value
           end
-          send(variable.to_sym, value)
+          send(variable.to_sym, value) # It doesn't set default nil values
         end
       end
 
@@ -41,7 +41,11 @@ class Chef
         values = Hash.new
         self.attribute_names.each do |key|
           init_default_attribute_value(key, default_data, default_symbol)
-          values[key] = send(key.to_sym)
+          value = send(key.to_sym)
+          if value == default_symbol
+            value = nil
+          end
+          values[key] = value
         end
         values
       end
