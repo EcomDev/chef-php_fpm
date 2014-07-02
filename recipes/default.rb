@@ -19,7 +19,7 @@
 # along with PHP-FPM Cookbook.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-php_version = node['php']['version']
+php_version = node['php']['major_version']
 
 raise 'PHP version '+ php_version + ' is unknown' unless node['php_versions'].attribute?(php_version)
 

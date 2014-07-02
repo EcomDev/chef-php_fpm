@@ -34,7 +34,7 @@ describe 'php_fpm::default' do
     let (:options) { Hash.new }
 
     it 'raises an exception when php version is not found' do
-      chef_run.node.set['php']['version'] = '99.99'
+      chef_run.node.set['php']['major_version'] = '99.99'
       expect { converged }.to raise_error('PHP version 99.99 is unknown')
     end
 

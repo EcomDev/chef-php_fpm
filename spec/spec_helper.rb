@@ -74,7 +74,7 @@ module SpecHelper
   def stub_php_vars(node, version_alias='5.test', version='5.1.0', checksum='test1', bin='test-php-bin')
     node.set['php_versions'][version_alias]['version'] = version
     node.set['php_versions'][version_alias]['checksum'] = checksum
-    node.set['php']['version'] = version_alias
+    node.set['php']['major_version'] = version_alias
     node.set['php']['bin'] = bin
   end
 
