@@ -22,7 +22,7 @@ suites:
       - recipe[php_fpm::_test_pool_create]
     attributes:
       php:
-        version: '5.5'
+        major_version: '5.5'
         recompile: true
       _php_fpm_test:
         pool: test
