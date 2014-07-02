@@ -4,7 +4,7 @@ maintainer_email ''
 license          ''
 description      'Installs/Configures php_fpm'
 long_description 'Installs/Configures php_fpm'
-version          '0.1.2'
+version          '0.1.3'
 
 depends 'php'
 depends 'apt'

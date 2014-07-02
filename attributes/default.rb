@@ -26,6 +26,8 @@ default['php_versions']['5.4']['checksum'] = '9caf973b19ba93bb2b78f78c61643d5d'
 default['php_versions']['5.5']['version'] = '5.5.13'
 default['php_versions']['5.5']['checksum'] = '32d0fc26fccdb249a918c0e01ffb7b82'
 
+default['php']['major_version'] = '5.5'
+
 include_attribute 'php'
 
 if platform_family?('debian')
