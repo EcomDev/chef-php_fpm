@@ -20,7 +20,7 @@
 #
 require 'spec_helper'
 
-expected_php_version = '5.5.13'
+expected_php_version = '5.5.14'
 service_name = 'php5-fpm'
 service_name = 'php-fpm' if os[:family] == 'RedHat'
 

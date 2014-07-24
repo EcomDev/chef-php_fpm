@@ -18,33 +18,26 @@
 # You should have received a copy of the GNU General Public License
 # along with PHP-FPM Cookbook.  If not, see <http://www.gnu.org/licenses/>.
 #
-default['php']['fpm']['pool_dir_name'] = 'pool.d'
-
-case node['platform_family']
-  when 'rhel', 'fedora'
-    default['php']['fpm']['conf_dir']  = '/etc'
-    default['php']['fpm']['pool_dir_name'] = 'php-fpm.d'
-    default['php']['fpm']['log_dir']   = '/var/log/php-fpm'
-    default['php']['fpm']['logrotate_file']   = '/etc/logrotate.d/php-fpm'
-    default['php']['fpm']['run_dir']   = '/var/run/php-fpm'
-    default['php']['fpm']['service']   = 'php-fpm'
-  when 'debian'
-    default['php']['fpm']['conf_dir']  = '/etc/php5/fpm'
-    default['php']['fpm']['log_dir']   = '/var/log/php5-fpm'
-    default['php']['fpm']['logrotate_file']   = '/etc/logrotate.d/php5-fpm'
-    default['php']['fpm']['run_dir']   = '/var/run'
-    default['php']['fpm']['service']   = 'php5-fpm'
+namespace 'php', 'fpm' do
+  pool_dir_name 'pool.d'
+  if platform_family?('rhel', 'fedora')
+    conf_dir '/etc'
+    pool_dir_name 'php-fpm.d'
+    log_dir '/var/log/php-fpm'
+    logrotate_file '/etc/logrotate.d/php-fpm'
+    run_dir '/var/run/php-fpm'
+    service 'php-fpm'
   else
-    default['php']['fpm']['conf_dir']  = '/etc/php5/fpm'
-    default['php']['fpm']['log_dir']   = '/var/log/php5-fpm'
-    default['php']['fpm']['logrotate_file']   = '/etc/logrotate.d/php5-fpm'
-    default['php']['fpm']['run_dir']   = '/var/run'
-    default['php']['fpm']['service']   = 'php5-fpm'
+    conf_dir '/etc/php5/fpm'
+    log_dir '/var/log/php5-fpm'
+    logrotate_file '/etc/logrotate.d/php5-fpm'
+    run_dir '/var/run'
+    service  'php5-fpm'
+  end
+
+  pool_dir File.join(node.php.fpm.conf_dir, node.php.fpm.pool_dir_name)
+  disable_default_pool true
 end
-
-default['php']['fpm']['pool_dir']  = File.join(node['php']['fpm']['conf_dir'], default['php']['fpm']['pool_dir_name'])
-
-default['php']['fpm']['disable_default_pool'] = true
 
 # Default FPM pool settings
 default['php']['fpm']['default']['user'] = 'www-data'

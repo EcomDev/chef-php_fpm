@@ -1,13 +1,14 @@
 name             'php_fpm'
-maintainer       ''
-maintainer_email ''
-license          ''
-description      'Installs/Configures php_fpm'
-long_description 'Installs/Configures php_fpm'
-version          '0.1.3'
+maintainer       'Ivan Chepurnyi'
+maintainer_email 'ivan.chepurnyi@ecomdev.org'
+license          'GPLv3'
+description      'Installs/Configures PHP-FPM pools'
+long_description 'Installs/Configures PHP-FPM pools'
+version          '0.1.5'
 
 depends 'php'
 depends 'apt'
+depends 'ecomdev_common'
 
 %w(ubuntu debian centos).each do |os|
   supports os

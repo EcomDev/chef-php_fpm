@@ -19,16 +19,30 @@
 # along with PHP-FPM Cookbook.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-php_version = node['php']['major_version']
+php_version = node.deep_fetch!('php', 'major_version')
 
-raise 'PHP version '+ php_version + ' is unknown' unless node['php_versions'].attribute?(php_version)
 
-node.set['php']['install_method'] = 'source'
-node.set['php']['version'] = node['php_versions'][php_version]['version']
-node.set['php']['checksum'] = node['php_versions'][php_version]['checksum']
+raise 'PHP version '+ php_version + ' is unknown' unless node.deep_fetch('php_versions', php_version)
+
+php_prefix = node.deep_fetch!('php', 'prefix_dir')
+php_prefix = '/usr' if rhel?
+full_version = node.deep_fetch!('php_versions', php_version, 'version')
+
+node.namespace 'php', precedence: node.set  do
+  install_method 'source'
+  version full_version
+  checksum node.deep_fetch!('php_versions', php_version, 'checksum')
+  prefix_dir php_prefix unless node['php']['prefix'] == php_prefix
+  ext_dir ::File.join(php_prefix, 'lib', 'php', 'modules', full_version)
+  unless node.deep_fetch!('php', 'ext_conf_dir').match(/[\/\\]#{Regexp.escape(full_version)}$/)
+    ext_conf_dir ::File.join(node.deep_fetch!('php', 'ext_conf_dir'), full_version)
+  end
+end
+
+node.from_file(run_context.resolve_attribute('php', 'default'))
 
 if node['php']['recompile']
-  php_binary = node['php']['prefix_dir'] + '/bin/' + node['php']['bin']
+  php_binary = php_prefix + '/bin/' + node['php']['bin']
   php_version_match = 'test -f ' + php_binary + ' && ('+ php_binary +' -v | grep "PHP ' + node['php']['version'] +'")'
   file php_binary do
     action :delete
@@ -36,7 +50,7 @@ if node['php']['recompile']
   end
 end
 
-if node.platform_family?('debian')
+if debian?
   include_recipe 'apt::default'
 end
 

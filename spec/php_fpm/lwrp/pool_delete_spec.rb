@@ -23,14 +23,13 @@ require 'spec_helper'
 describe 'php_fpm::_test_pool_delete' do
   include SpecHelper
 
-  let(:chef_run) do
-    ChefSpec::Runner.new(step_into: 'php_fpm_pool') do |node|
-      stub_include(['php_fpm::fpm'])
-      node.set[:_php_fpm_test][:pool] = pool_name
-    end
-  end
+  before (:each) { allow_recipe('php_fpm::fpm') }
 
-  let (:test_params) { chef_run.node.set[:_php_fpm_test] }
+  let(:chef_run) do
+    chef_run_proxy.instance(step_into: 'php_fpm_pool') do |node|
+      node.set[:_php_fpm_test][:pool] = pool_name
+    end.converge(described_recipe)
+  end
 
   let (:node) { chef_run.node }
 
@@ -38,29 +37,29 @@ describe 'php_fpm::_test_pool_delete' do
     let (:pool_name) { 'test' }
 
     it 'creates a new fpm pool test' do
-      expect(converged).to delete_php_fpm_pool('test')
+      expect(chef_run).to delete_php_fpm_pool('test')
     end
 
     it 'includes php_fpm::fpm recipe' do
-      expect(converged).to include_recipe('php_fpm::fpm')
+      expect(chef_run).to include_recipe('php_fpm::fpm')
     end
 
 
     it 'it deletes php fpm pool config file' do
-      expect(converged).to delete_file(File.join(node['php']['fpm']['pool_dir'], 'test.conf'))
+      expect(chef_run).to delete_file(File.join(node['php']['fpm']['pool_dir'], 'test.conf'))
     end
 
     it 'reloads fpm service if pools have been added before' do
-      converged do
-        stub_dir_glob(File.join(node['php']['fpm']['pool_dir'], '*.conf'), [File.join(node['php']['fpm']['pool_dir'], 'other.conf')])
+      chef_run_proxy.block(:converge, false) do |runner|
+        stub_dir_glob(File.join(runner.node['php']['fpm']['pool_dir'], '*.conf'), [File.join(runner.node['php']['fpm']['pool_dir'], 'other.conf')])
       end
       file = chef_run.file(File.join(node['php']['fpm']['pool_dir'], 'test.conf'))
       expect(file).to notify('service[' + node['php']['fpm']['service'] + ']').to(:reload).immediately
     end
 
     it 'stop fpm service if pool config was updated and no pools have been started' do
-      converged do
-        stub_dir_glob(File.join(node['php']['fpm']['pool_dir'], '*.conf'), [File.join(node['php']['fpm']['pool_dir'], 'test.conf')])
+      chef_run_proxy.block(:converge, false) do |runner|
+        stub_dir_glob(File.join(runner.node['php']['fpm']['pool_dir'], '*.conf'), [File.join(runner.node['php']['fpm']['pool_dir'], 'test.conf')])
       end
 
       file = chef_run.file(File.join(node['php']['fpm']['pool_dir'], 'test.conf'))

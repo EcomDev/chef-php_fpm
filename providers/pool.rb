@@ -23,16 +23,14 @@ def whyrun_supported?
   true
 end
 
+use_inline_resources
+
 action :create do
   run_context.include_recipe 'php_fpm::fpm'
   resource = Array.new
-  variables = new_resource.dump_attribute_values(
-      node['php']['fpm']['default'],
-      :fpm_default
-  )
-
-  variables[:listen] = new_resource.php_fpm_listen(new_resource.name, variables)
-  variables[:listen_params] = new_resource.generate_php_fpm_listen_params(new_resource.name)
+  variables = new_resource.pool_options.clone
+  variables[:listen] =  fpm_listen
+  variables[:listen_params] = fpm_listen_params
 
   resource <<= template "#{node['php']['fpm']['conf_dir']}/php-fpm.conf" do
     owner 'root'
@@ -77,4 +75,37 @@ action :delete do
   end
 
   new_resource.update_from_resources(resource)
+end
+
+def current_resource(resource = nil)
+  resource || new_resource
+end
+
+def fpm_listen(resource = nil)
+  resource = current_resource(resource)
+  options = resource.pool_options
+  if options.key?('socket') && options['socket']
+    ::File.join(node['php']['fpm']['run_dir'], resource.name + '.php-fpm-sock')
+  else
+    String(options['ip']) + ':' + String(options['port'])
+  end
+end
+
+def fpm_listen_params(resource = nil)
+  resource = current_resource(resource)
+  options = resource.pool_options
+  params = Hash.new
+  if options.key?('socket') && options['socket']
+    params[:owner] =  options[:socket_user]
+    params[:group] =  options[:socket_group]
+    params[:mode] =  options[:socket_mode]
+  else
+    params[:allowed_clients] = Array(options[:allowed_ip]).join(',')
+  end
+
+  if options[:queue_size]
+    params[:backlog] = options[:queue_size]
+  end
+
+  params
 end
