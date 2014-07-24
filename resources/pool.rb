@@ -102,7 +102,7 @@ def pool_options
   unless node.shared_data?(:resource, :php_fpm_pool, name)
     node.shared_data(:resource, :php_fpm_pool, name,
                      dump_attribute_values(node['php']['fpm']['default'], :fpm_default))
-
+    node.shared_data(:resource, :fpm, name, node.shared_data(:resource, :php_fpm_pool, name))
   end
 
   node.shared_data(:resource, :php_fpm_pool, name)

@@ -210,6 +210,7 @@ describe 'php_fpm::_test_pool_create' do
       resource = chef_run.php_fpm_pool('test')
 
       expect(EcomDev::SharedData.get(:resource, :php_fpm_pool, :test)).to eq(resource.pool_options)
+      expect(EcomDev::SharedData.get(:resource, :fpm, :test)).to eq(resource.pool_options)
     end
   end
 end
