@@ -85,7 +85,7 @@ def fpm_listen(resource = nil)
   resource = current_resource(resource)
   options = resource.pool_options
   if options.key?('socket') && options['socket']
-    ::File.join(node['php']['fpm']['run_dir'], resource.name + '.php-fpm-sock')
+    resource.socket_path
   else
     String(options['ip']) + ':' + String(options['port'])
   end

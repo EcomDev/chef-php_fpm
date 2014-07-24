@@ -93,16 +93,31 @@ def only_this_pool?
   pools == [::File.join(node['php']['fpm']['pool_dir'], name + '.conf')]
 end
 
-def after_create
-  pool_options # initializes pool options
+def after_created
   super
+  share_fpm_info(pool_options)
+end
+
+def socket_path
+  ::File.join(node['php']['fpm']['run_dir'], name + '.php-fpm-sock')
+end
+
+def share_fpm_info(options)
+  fpm_options = {}
+  if options[:socket]
+    fpm_options[:socket_path] = socket_path
+  else
+    fpm_options[:ip] = options[:ip]
+    fpm_options[:port] = options[:port]
+  end
+
+  node.shared_data(:resource, :fpm, name, fpm_options)
 end
 
 def pool_options
   unless node.shared_data?(:resource, :php_fpm_pool, name)
-    node.shared_data(:resource, :php_fpm_pool, name,
-                     dump_attribute_values(node['php']['fpm']['default'], :fpm_default))
-    node.shared_data(:resource, :fpm, name, node.shared_data(:resource, :php_fpm_pool, name))
+    options = dump_attribute_values(node['php']['fpm']['default'], :fpm_default)
+    node.shared_data(:resource, :php_fpm_pool, name, options)
   end
 
   node.shared_data(:resource, :php_fpm_pool, name)
