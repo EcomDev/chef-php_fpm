@@ -32,11 +32,11 @@ describe 'php_fpm::_test_pool_create' do
   end
 
   def test_params(&block)
-    chef_run_proxy.before(:converge, false) do |chef_run|
+    chef_run_proxy.before(:converge, false) do |runner|
       if block.arity == 1
-        block.call(chef_run.node.set[:_php_fpm_test])
+        block.call(runner.node.set[:_php_fpm_test])
       else
-        block.call(chef_run.node.set[:_php_fpm_test], chef_run.node)
+        block.call(runner.node.set[:_php_fpm_test], runner.node)
       end
     end
   end
@@ -206,11 +206,31 @@ describe 'php_fpm::_test_pool_create' do
       expect(template).to notify('service[' + node['php']['fpm']['service'] + ']').to(:reload).immediately
     end
 
-    it 'stores information about added resource into shared data' do
-      resource = chef_run.php_fpm_pool('test')
+    it 'stores resource options into shared data' do
+      chef_run
+      expect(EcomDev::SharedData.get(:resource, :php_fpm_pool, :test)).to include(
+                                                                              name: 'test',
+                                                                              ip: '127.0.0.1',
+                                                                              port: '9000',
+                                                                              socket: true
+                                                                          )
+    end
 
-      expect(EcomDev::SharedData.get(:resource, :php_fpm_pool, :test)).to eq(resource.pool_options)
-      expect(EcomDev::SharedData.get(:resource, :fpm, :test)).to eq(resource.pool_options)
+    it 'stores information about added resource into shared data' do
+      chef_run
+      hash = EcomDev::SharedData.get(:resource, :fpm, :test)
+      expect(hash).to include(socket_path: node['php']['fpm']['run_dir'] + '/test.php-fpm-sock')
+      expect(hash.keys.map(&:to_sym)).to contain_exactly(:socket_path)
+    end
+
+    it 'stores information about added resource into shared data with tcp options' do
+      test_params do |params|
+        params.socket = false
+      end
+      chef_run
+      hash = EcomDev::SharedData.get(:resource, :fpm, :test)
+      expect(hash).to include(ip: '127.0.0.1', port: '9000')
+      expect(hash.keys.map(&:to_sym)).to contain_exactly(:ip, :port)
     end
   end
 end
