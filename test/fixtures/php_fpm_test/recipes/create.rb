@@ -18,14 +18,11 @@
 # You should have received a copy of the GNU General Public License
 # along with PHP-FPM Cookbook.  If not, see <http://www.gnu.org/licenses/>.
 #
-if defined?(ChefSpec)
-  ChefSpec::Runner.define_runner_method(:php_fpm_pool)
 
-  def create_php_fpm_pool(resource)
-    ChefSpec::Matchers::ResourceMatcher.new(:php_fpm_pool, :create, resource)
-  end
-
-  def delete_php_fpm_pool(resource)
-    ChefSpec::Matchers::ResourceMatcher.new(:php_fpm_pool, :delete, resource)
+php_fpm_pool node['php_fpm_test']['pool'] do
+  node['php_fpm_test'].each_pair do |key, value|
+    if key != 'pool'
+      send(key.to_sym, value)
+    end
   end
 end

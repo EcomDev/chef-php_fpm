@@ -92,3 +92,18 @@ end
 def only_this_pool?
   pools == [::File.join(node['php']['fpm']['pool_dir'], name + '.conf')]
 end
+
+def after_create
+  pool_options # initializes pool options
+  super
+end
+
+def pool_options
+  unless node.shared_data?(:resource, :php_fpm_pool, name)
+    node.shared_data(:resource, :php_fpm_pool, name,
+                     dump_attribute_values(node['php']['fpm']['default'], :fpm_default))
+
+  end
+
+  node.shared_data(:resource, :php_fpm_pool, name)
+end

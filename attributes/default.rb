@@ -19,30 +19,34 @@
 # along with PHP-FPM Cookbook.  If not, see <http://www.gnu.org/licenses/>.
 #
 # List of latest available PHP versions with their checksums for download
-default['php_versions']['5.3']['version'] = '5.3.28'
-default['php_versions']['5.3']['checksum'] = 'eec3fb5ccb6d8c238f973d306bebb00e'
-default['php_versions']['5.4']['version'] = '5.4.29'
-default['php_versions']['5.4']['checksum'] = '9caf973b19ba93bb2b78f78c61643d5d'
-default['php_versions']['5.5']['version'] = '5.5.13'
-default['php_versions']['5.5']['checksum'] = '32d0fc26fccdb249a918c0e01ffb7b82'
 
-default['php']['major_version'] = '5.5'
+namespace 'php_versions' do
+  namespace '5.3' do
+    version '5.3.28'
+    checksum 'eec3fb5ccb6d8c238f973d306bebb00e'
+  end
 
-include_attribute 'php'
+  namespace '5.4' do
+    version '5.4.30'
+    checksum '461afd4b84778c5845b71e837776139f'
+  end
 
-if platform_family?('debian')
-  node.set['apt']['compiletime'] = true
-  node.set['apt']['compile_time_update'] = true
-elsif platform_family?('rhel')
-  old_prefix_dir = node['php']['prefix_dir']
-  old_configure_opts = default['php']['configure_options']
-
-  default['php']['prefix_dir'] = '/usr'
-
-  default['php']['configure_options'] = old_configure_opts.collect do |v|
-    v.sub(/^\-\-prefix\=#{Regexp.escape(old_prefix_dir)}$/, '--prefix=' + node['php']['prefix_dir'])
+  namespace '5.5' do
+    version '5.5.14'
+    checksum 'b34262d4ccbb6bef8d2cf83840625201'
   end
 end
 
-default['php']['recompile'] = false
+namespace 'php' do
+  major_version '5.5'
+  recompile false
+end
 
+if platform_family?('debian')
+  namespace 'apt', precedence: normal do
+    compiletime true
+    compile_time_update true
+  end
+end
+
+include_attribute 'php'

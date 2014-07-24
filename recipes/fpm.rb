@@ -34,7 +34,7 @@ directories.each do |dir_name, dir_mode|
     group 'root'
     mode dir_mode
     recursive true
-    not_if { File.exist?(dir_name) }
+    not_if { ::File.exists?(dir_name) }
   end
 end
 

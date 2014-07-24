@@ -24,73 +24,74 @@ describe 'php_fpm::default' do
   include SpecHelper
 
   let(:chef_run) do
-    ChefSpec::Runner.new(options)  do |node|
+    chef_run_proxy.instance do |node|
       stub_php_vars(node)
-      stub_include
-    end
+    end.converge(described_recipe)
   end
 
   context 'In all OS versions it' do
-    let (:options) { Hash.new }
-
     it 'raises an exception when php version is not found' do
-      chef_run.node.set['php']['major_version'] = '99.99'
-      expect { converged }.to raise_error('PHP version 99.99 is unknown')
+      chef_run_proxy.block(:initialize, true) do |node|
+        node.set['php']['major_version'] = '99.99'
+      end
+      expect { chef_run }.to raise_error('PHP version 99.99 is unknown')
     end
 
     it 'sets version of php to 5.1.0' do
-      expect(converged.node['php']['version']).to eq('5.1.0')
+      expect(chef_run.node['php']['version']).to eq('5.1.0')
     end
 
     it 'sets checksum of php to test1' do
-      expect(converged.node['php']['checksum']).to eq('test1')
+      expect(chef_run.node['php']['checksum']).to eq('test1')
     end
 
     it 'sets install method of php to source' do
-      expect(converged.node['php']['install_method']).to eq('source')
+      expect(chef_run.node['php']['install_method']).to eq('source')
     end
+
+    it 'sets change php extension directory to version based' do
+      expect(chef_run.node['php']['ext_conf_dir']).to end_with('5.1.0')
+      expect(chef_run.node['php']['ext_dir']).to eq(File.join(chef_run.node['php']['prefix_dir'], 'lib', 'php', 'modules', '5.1.0'))
+      expect(chef_run.node['php']['configure_options']).to include('--with-config-file-scan-dir=' + chef_run.node['php']['ext_conf_dir'])
+    end
+
 
     it 'includes php recipe for installing it from source' do
-      expect(converged).to include_recipe('php::default')
+      expect(chef_run).to include_recipe('php::default')
     end
   end
-
-  SpecPlatforms.filtered(true, ['ubuntu', 'debian']).each do |platform, version|
-    context 'In ' + platform + ' ' + version +  ' systems it' do
-      let (:options) do
-        { platform: platform, version: version }
+  platform({family: :debian}, true) do |name, version|
+    context 'In ' + name + ' ' + version +  ' systems it' do
+      before (:each) do
+        chef_run_proxy.options(platform: name, version: version)
       end
 
       it 'includes apt recipe to auto-update' do
-        expect(converged).to include_recipe('apt::default')
+        expect(chef_run).to include_recipe('apt::default')
       end
 
       it 'sets apt compiletime attribute to true' do
-        expect(converged.node['apt']['compiletime']).to eq(true)
+        expect(chef_run.node['apt']['compiletime']).to eq(true)
       end
 
       it 'sets apt compile_time_update attribute to true' do
-        expect(converged.node['apt']['compile_time_update']).to eq(true)
+        expect(chef_run.node['apt']['compile_time_update']).to eq(true)
       end
     end
   end
 
-  SpecPlatforms.filtered(true, ['centos']).each do |platform, version|
-    context 'In ' + platform + ' ' + version +  ' systems it' do
-      let (:options) do
-        { platform: platform, version: version }
+  platform({family: :rhel}, true)  do |name, version|
+    context 'In ' + name + ' ' + version +  ' systems it' do
+      before (:each) do
+        chef_run_proxy.options(platform: name, version: version)
       end
 
       it 'replaces php prefix path' do
-        expect(converged.node['php']['prefix_dir']).to eq('/usr')
+        expect(chef_run.node['php']['prefix_dir']).to eq('/usr')
       end
 
       it 'replaces php prefix path in php configure options' do
-        expect(converged.node['php']['prefix_dir']).to eq('/usr')
-      end
-
-      it 'sets apt compile_time_update attribute to true' do
-
+        expect(chef_run.node['php']['prefix_dir']).to eq('/usr')
       end
     end
   end
