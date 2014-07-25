@@ -28,6 +28,7 @@ Integrates well with other cookbooks:
 ## Build Status
 
 [![Develop Branch](https://api.travis-ci.org/IvanChepurnyi/chef-php_fpm.svg?branch=develop)](https://travis-ci.org/IvanChepurnyi/chef-php_fpm) **Next Release Branch**
+
 [![Master Branch](https://api.travis-ci.org/IvanChepurnyi/chef-php_fpm.svg)](https://travis-ci.org/IvanChepurnyi/chef-php_fpm) **Current Stable Release**
 
 # Supported OS
