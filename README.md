@@ -27,9 +27,9 @@ Integrates well with other cookbooks:
 
 ## Build Status
 
-[![Develop Branch](https://api.travis-ci.org/IvanChepurnyi/chef-php_fpm.svg?branch=develop)](https://travis-ci.org/IvanChepurnyi/chef-php_fpm) **Next Release Branch**
+[![Develop Branch](https://api.travis-ci.org/EcomDev/chef-php_fpm.svg?branch=develop)](https://travis-ci.org/EcomDev/chef-php_fpm) **Next Release Branch**
 
-[![Master Branch](https://api.travis-ci.org/IvanChepurnyi/chef-php_fpm.svg)](https://travis-ci.org/IvanChepurnyi/chef-php_fpm) **Current Stable Release**
+[![Master Branch](https://api.travis-ci.org/EcomDev/chef-php_fpm.svg)](https://travis-ci.org/EcomDev/chef-php_fpm) **Current Stable Release**
 
 # Supported OS
 * Ubuntu 12.04, 13.02
