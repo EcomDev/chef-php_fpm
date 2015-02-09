@@ -35,7 +35,6 @@ namespace 'php', 'fpm' do
     service  'php5-fpm'
   end
 
-  pool_dir File.join(node.php.fpm.conf_dir, node.php.fpm.pool_dir_name)
   disable_default_pool true
 end
 
@@ -90,6 +89,7 @@ end
 
 
 namespace 'php', 'fpm' do
+  pool_dir File.join(node.php.fpm.conf_dir, node.php.fpm.pool_dir_name)
   pid File.join(node['php']['fpm']['run_dir'], node['php']['fpm']['service'] + '.pid')
   error_log File.join(node['php']['fpm']['log_dir'], 'fpm-master.log')
   log_level 'notice'
