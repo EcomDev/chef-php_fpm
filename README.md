@@ -11,7 +11,7 @@ Integrates well with other cookbooks:
 * Virtualbox
 * Vagrant
 * Required vagrant plugins
-    * Berkshelf (`vagrant plugin install vagrant-berkshelf --plugin-version 2.0.1`)
+    * Berkshelf (`vagrant plugin install vagrant-berkshelf`)
 * Optional vagrant plugins
     * Hostmanger plugin (`vagrant plugin install hostmanager`) (*nix only)
         
@@ -24,6 +24,10 @@ Integrates well with other cookbooks:
     * Cachier plugin (`vagrant plugin install vagrant-cachier`) 
        
        Improves Speed of virtual machine provisioning by caching repo packages and gems 
+
+
+# Chef Client
+Chef should be at version 11.16.4, not newer, known bug with attributes reading.
 
 ## Build Status
 
