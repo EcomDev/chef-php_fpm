@@ -21,19 +21,19 @@
 # List of latest available PHP versions with their checksums for download
 
 namespace 'php_versions' do
-  namespace '5.3' do
-    version '5.3.28'
-    checksum 'eec3fb5ccb6d8c238f973d306bebb00e'
-  end
-
   namespace '5.4' do
-    version '5.4.30'
-    checksum '461afd4b84778c5845b71e837776139f'
+    version '5.4.37'
+    checksum '42494eea588dea228719757deca03d30'
   end
 
   namespace '5.5' do
-    version '5.5.14'
-    checksum 'b34262d4ccbb6bef8d2cf83840625201'
+    version '5.5.21'
+    checksum '63f8d358d651adef906f650175c796b1'
+  end
+
+  namespace '5.6' do
+    version '5.6.5'
+    checksum '636b73f378000de933081319cad586d6'
   end
 end
 
