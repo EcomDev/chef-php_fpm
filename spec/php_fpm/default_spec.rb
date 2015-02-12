@@ -55,6 +55,13 @@ describe 'php_fpm::default' do
       expect(chef_run.node['php']['configure_options']).to include('--with-config-file-scan-dir=' + chef_run.node['php']['ext_conf_dir'])
     end
 
+    it 'adds --with-jpeg-dir option' do
+      expect(chef_run.node['php']['configure_options']).to include('--with-jpeg-dir')
+    end
+
+    it 'adds --with-png-dir option' do
+      expect(chef_run.node['php']['configure_options']).to include('--with-png-dir')
+    end
 
     it 'includes php recipe for installing it from source' do
       expect(chef_run).to include_recipe('php::default')
