@@ -41,6 +41,12 @@ end
 
 node.from_file(run_context.resolve_attribute('php', 'default'))
 
+configure_options = node.deep_fetch!('php', 'configure_options')
+configure_options << '--with-jpeg-dir'
+configure_options << '--with-png-dir'
+
+node.set[:php][:configure_options] = configure_options
+
 if node['php']['recompile']
   php_binary = php_prefix + '/bin/' + node['php']['bin']
   php_version_match = 'test -f ' + php_binary + ' && ('+ php_binary +' -v | grep "PHP ' + node['php']['version'] +'")'
